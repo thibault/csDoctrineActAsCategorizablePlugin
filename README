@@ -1,0 +1,105 @@
+# sfDoctrineActAsCategorizablePlugin
+
+## Introduction
+This behavior permits to assign categories to doctrine models
+
+## Features
+
+ * add a category to an object
+ * allows for Nested categories using the Doctrine Nested Set Behavior
+
+ * Overview
+		Because multiple unrelated objects can be categorized in a single project, by default this plugin
+		separates each individual model assigned this behavior into its own Category set.  This can be
+		customized (see below)
+
+
+ * Other Options: 
+
+You can set the root name of your category (default is the name of the model appended with '_Root')
+This is useful when you want two models to have identical directory structures
+		
+	[yml]
+	Photos:
+		actAs: 
+			Categorizable:		{	root:	Gallery_Root }
+				
+	Videos:
+		  actAs: 
+				Categorizable:	{	root:	Gallery_Root }
+		
+The above models will now pull from the same set of categories
+		
+You can change the local ID to another name (default is category_id)
+	
+	[yml]			
+	actAs: 
+		Categorizable:
+			category_id: 		my_id 
+
+Use the following functions when manipulating your category objects:
+	
+	
+#Table Methods
+	
+	[php]
+	//Saves the category specified to the appropriate category tree 			
+	$objectTable->addCategory($category*) 
+	
+	//Removes the category safely from the category tree.
+	$objectTable->removeCategory($category)
+				
+	
+	
+#Object Methods	
+	
+	[php]
+	//Saves the category specified to the appropriate category tree and assigns it to your object
+	$object->addCategory($category*) 
+				
+	//assigns the specified category to your object
+	$object->setCategory($category*)
+	
+#Category Methods				
+
+	[php]
+	//returns the assigned parent category (excluding the category tree root)
+	$category->getParentCategory()
+				
+	//returns a collection of sub categories for the category
+	$category->getSubCategories()
+				
+	//sets the $child category as a direct descendent of $category
+	$category->setSubCategory($child*)
+				
+	//sets the $category category as a direct descendent of $parent
+	$category->setParentCategory($parent*)
+				
+				
+#Category Table Methods
+
+	[php]
+	//returns a Category object with the specified name
+	$categoryTable->getCategory($name)
+				
+__*variable is mixed, can either be string or Category types__
+	
+## Philosophy of the stuff ##
+
+* categorizable models must have a primary key
+* categories are saved when the object is saved
+
+## Get it installed ##
+
+* go to your project's root
+* Install the plugin: 
+
+	actAs: [Categorizable] to model you want to be categorized
+		
+* rebuild the model: 
+ 
+	./symfony doctrine-build-all
+ 
+* clear cache:
+ 
+	./symfony cc

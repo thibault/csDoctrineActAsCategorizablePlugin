@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.4.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+    <name>[automatic]</name>
+    <channel>pear.symfony-project.com</channel>
+    <summary>sfDoctrineActAsTaggable Plugin</summary>
+    <description>A port of sfPropelActAsTaggle plugin. As Doctrine wont support tagging very soon and there is more than database tagging in this project</description>
+    <lead>
+        <name>Brent Shaffer</name>
+        <user>Brent Shaffer</user>
+        <email>bshaffer@centresource.com</email>
+        <active>yes</active>
+    </lead>
+    <date>[automatic]</date>
+    <version>
+        <release>0.0.3</release>
+        <api>1.0.0</api>
+    </version>
+    <stability>
+        <release>beta</release>
+        <api>stable</api>
+    </stability>
+    <license uri="http://www.symfony-project.com/license">MIT license</license>
+    <notes>-</notes>
+    <contents>[automatic]</contents>
+
+    <dependencies>
+        <required>
+            <php>
+                <min>5.1.0</min>
+            </php>
+            <pearinstaller>
+                <min>1.4.1</min>
+            </pearinstaller>
+            <package>
+                <name>symfony</name>
+                <channel>pear.symfony-project.com</channel>
+                <min>1.0.0</min>
+                <max>1.2.0</max>
+            </package>
+        </required>
+    </dependencies>
+
+    <phprelease>
+    </phprelease>
+ 
+    <changelog>
+    <release>
+        <version>
+            <release>0.0.1</release>
+            <api>1.0.0</api>
+        </version>
+        <stability>
+            <release>stable</release>
+            <api>stable</api>
+        </stability>
+        <license uri="http://www.symfony-project.com/license">MIT license</license>
+        <date>2008-09-22</date>
+        <license>MIT</license>
+        <notes>
+            * Initial public release. 
+        </notes>
+    </release>
+    </changelog>
+</package>

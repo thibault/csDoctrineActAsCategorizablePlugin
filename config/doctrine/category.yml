@@ -1,0 +1,13 @@
+Category:
+  actAs: 
+    NestedSet:
+      hasManyRoots:   true
+  columns:
+    id:
+      type:           integer(4)
+      autoincrement:  true
+      primary:        true
+    name:
+      type:           string(255)
+    description:
+      type:           clob
