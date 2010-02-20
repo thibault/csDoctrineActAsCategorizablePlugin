@@ -1,10 +1,10 @@
 Category:
-  actAs: 
+  actAs:
     NestedSet:
       hasManyRoots:   true
   columns:
     id:
-      type:           integer(4)
+      type:           integer
       autoincrement:  true
       primary:        true
     name:
