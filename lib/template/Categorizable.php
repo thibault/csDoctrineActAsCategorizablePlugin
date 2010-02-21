@@ -1,58 +1,79 @@
 <?php
 
-// 
+//
 //  Categorizable.php
 //  csActAsCategorizablePlugin
-//  
+//
 //  Created by Brent Shaffer on 2009-01-29.
 //  Copyright 2008 Centre{source}. Al9 rights reserved.
-// 
 
 class Doctrine_Template_Categorizable extends Doctrine_Template
-{    
+{
   /**
    * Array of Categorizable options
-   */  
-  protected $_options = array('columns' => array(
-																'category_id' =>  array(
-																	'name' 		=> 'category_id',
-																	'type' 		=> 'integer',
-																	'length'	=>  4,
-																	'model'		=> 'Category',
-		                              'alias'   =>  null,
-		                              'foreignAlias'   =>  null,
-		                              'options' =>  array()),
-																),
+   */
+  protected $_options = array('category' => array(
+                                'model'		=> 'Category',
+                                'alias'   => 'Categories',
+                                'foreignAlias'   =>  null,
+                                'refClass' => null,
+                                'local' => null,
+                                'foreign' => 'category_id',
+                              ),
 															'root'				=>  null,
-														
 	);
 
 
   /**
    * Constructor for Categorizable Template
    *
-   * @param array $options 
+   * @param array $options
    * @return void
    * @author Brent Shaffer
    */
   public function __construct(array $options = array())
   {
     $this->_options = Doctrine_Lib::arrayDeepMerge($this->_options, $options);
+
+    $name = Doctrine_Inflector::tableize($this->getInvoker()->getTable()->getOption('name'));
+
+    if (null === $this->_options['local'])
+    {
+      $this->_options['local'] = $name.'_id';
+    }
+
+    if (null === $this->_options['refClass'])
+    {
+      $this->_options['refClass'] = 'Category'.$this->getInvoker()->getTable()->getOption('name');
+    }
+
+    /*if (null === $this->_options['foreignAlias'])
+    {
+      $this->_options['foreignAlias'] =
+    }*/
   }
 
+  /**
+   * Set table definition for categorizable behavior
+   *
+   * @return void
+   * @author Brent Shaffer
+   */
+  public function setTableDefinition()
+  {
+    $this->addListener(new Doctrine_Template_Listener_Categorizable($this->_options));
+  }
 
   public function setup()
   {
-		foreach($this->_options['columns'] as $key => $options)
-		{
-			$this->hasOne($options['model'], array('local' => $options['name'],
-			                                 		'foreign' => 'id'));
-			
-			$relName = $this->getInvoker()->getTable()->getOption('name');
-			$relName = $options['foreignAlias'] ? $relName . ' AS '.$options['foreignAlias'] : $relName;
-			$relOptions = array('local' => 'id', 'foreign' => $options['name']);
-			Doctrine::getTable('Category')->bind(array($relName, $relOptions), Doctrine_Relation::MANY);
-		}
+    $categoryOptions = $this->_options['category'];
+    $relation = sprintf('%s as %s', $categoryOptions['model'], $categoryOptions['alias']);
+
+    $this->hasMany($relation, array(
+      'refClass' => $options['refClass'],
+      'local' => $options['local'],
+      'foreign' => $options['foreign']
+    ));
   }
 
 	public function createRootTableProxy()
@@ -63,29 +84,7 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
 		$root_category->getTable()->getTree()->createRoot($root_category);
 		return $root_category;
 	}
-	
-  /**
-   * Set table definition for categorizable behavior
-   *
-   * @return void
-   * @author Brent Shaffer
-   */
-  public function setTableDefinition()
-  {
-		foreach ($this->_options['columns'] as $key => $options) {
 
-	    $name = $options['name'];
-
-			if ($options['alias'])
-	    {
-	      $name .= ' as ' . $options['alias'];
-	    }
-			
-	    $this->hasColumn($name, $options['type'], $options['length'], $options['options']);
-		}
-		
-    $this->addListener(new Doctrine_Template_Listener_Categorizable($this->_options));
-  }
 	public function addCategoryTableProxy($category)
 	{
 		if(!$category->getNode()->getRootValue());
@@ -149,7 +148,7 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
 		}
 		elseif(is_string($category))
 		{
-			$category->secureSave();			
+			$category->secureSave();
 			$category = Doctrine::getTable('Category')->getOrCreateCategory($category);
 			return $this->getInvoker()->setCategory($category);
 		}
