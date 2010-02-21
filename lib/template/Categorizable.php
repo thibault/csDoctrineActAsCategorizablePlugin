@@ -29,51 +29,47 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
    *
    * @param array $options
    * @return void
-   * @author Brent Shaffer
    */
   public function __construct(array $options = array())
   {
-    $this->_options = Doctrine_Lib::arrayDeepMerge($this->_options, $options);
-
-    $name = Doctrine_Inflector::tableize($this->getInvoker()->getTable()->getOption('name'));
-
-    if (null === $this->_options['local'])
-    {
-      $this->_options['local'] = $name.'_id';
-    }
-
-    if (null === $this->_options['refClass'])
-    {
-      $this->_options['refClass'] = 'Category'.$this->getInvoker()->getTable()->getOption('name');
-    }
-
-    /*if (null === $this->_options['foreignAlias'])
-    {
-      $this->_options['foreignAlias'] =
-    }*/
+    parent::__construct($options);
+    $this->_plugin = new CategoryRefClassGenerator($this->_options);
   }
 
   /**
    * Set table definition for categorizable behavior
    *
    * @return void
-   * @author Brent Shaffer
    */
   public function setTableDefinition()
   {
     $this->addListener(new Doctrine_Template_Listener_Categorizable($this->_options));
   }
 
-  public function setup()
+  public function setUp()
   {
-    $categoryOptions = $this->_options['category'];
-    $relation = sprintf('%s as %s', $categoryOptions['model'], $categoryOptions['alias']);
+    $name = Doctrine_Inflector::tableize($this->getInvoker()->getTable()->getComponentName());
+
+    if (null === $this->_options['category']['local'])
+    {
+      $this->_options['category']['local'] = $name.'_id';
+    }
+
+    if (null === $this->_options['category']['refClass'])
+    {
+      $this->_options['category']['refClass'] = 'Category'.$this->getInvoker()->getTable()->getOption('name');
+    }
+
+    $options = $this->_options['category'];
+    $relation = sprintf('%s as %s', $options['model'], $options['alias']);
 
     $this->hasMany($relation, array(
       'refClass' => $options['refClass'],
       'local' => $options['local'],
       'foreign' => $options['foreign']
     ));
+
+    $this->_plugin->initialize($this->_table);
   }
 
   public function createRootTableProxy()
