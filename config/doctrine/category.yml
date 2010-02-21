@@ -3,11 +3,5 @@ Category:
     NestedSet:
       hasManyRoots:   true
   columns:
-    id:
-      type:           integer
-      autoincrement:  true
-      primary:        true
     name:
       type:           string(255)
-    description:
-      type:           clob
