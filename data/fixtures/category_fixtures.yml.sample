@@ -1,0 +1,14 @@
+Category:
+  NestedSet: true
+  root:
+    name: Magazine
+    children:
+      travel:
+        name: Travel
+        children:
+          europe:
+            name: Europe
+          asia:
+            name: Asia
+      cooking:
+        name: Cooking
