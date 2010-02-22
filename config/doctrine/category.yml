@@ -8,6 +8,10 @@ Category:
 
 # Ref class for the many to many relationship
 CategoryObject:
+  options:
+    symfony:
+      form: false
+      filter: false
   columns:
     category_id:
       type: integer
