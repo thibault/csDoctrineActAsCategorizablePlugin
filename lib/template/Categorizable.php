@@ -12,14 +12,12 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
   /**
    * Array of Categorizable options
    */
-  protected $_options = array('category' => array(
-                                'model'   => 'Category',
-                                'alias'   => 'Categories',
-                                'foreignAlias'   =>  null,
-                                'refClass' => null,
-                                'local' => null,
-                                'foreign' => 'category_id',
-                              ),
+  protected $_options = array('model'   => 'Category',
+                              'alias'   => 'Categories',
+                              'foreignAlias'   =>  null,
+                              'refClass' => null,
+                              'local' => null,
+                              'foreign' => 'category_id',
                               'root'        =>  null,
   );
 
@@ -50,17 +48,17 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
   {
     $name = Doctrine_Inflector::tableize($this->getInvoker()->getTable()->getComponentName());
 
-    if (null === $this->_options['category']['local'])
+    if (null === $this->_options['local'])
     {
-      $this->_options['category']['local'] = $name.'_id';
+      $this->_options['local'] = $name.'_id';
     }
 
-    if (null === $this->_options['category']['refClass'])
+    if (null === $this->_options['refClass'])
     {
-      $this->_options['category']['refClass'] = 'Category'.$this->getInvoker()->getTable()->getOption('name');
+      $this->_options['refClass'] = 'Category'.$this->getInvoker()->getTable()->getOption('name');
     }
 
-    $options = $this->_options['category'];
+    $options = $this->_options;
     $relation = sprintf('%s as %s', $options['model'], $options['alias']);
 
     $this->hasMany($relation, array(
