@@ -15,8 +15,8 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
   protected $_options = array('model'   => 'Category',
                               'alias'   => 'Categories',
                               'foreignAlias'   =>  null,
-                              'refClass' => null,
-                              'local' => null,
+                              'refClass' => 'CategoryObject',
+                              'local' => 'categorized_id',
                               'foreign' => 'category_id',
                               'root'        =>  null,
   );
@@ -31,43 +31,33 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
   public function __construct(array $options = array())
   {
     parent::__construct($options);
-    $this->_plugin = new CategoryRefClassGenerator($this->_options);
-  }
-
-  /**
-   * Set table definition for categorizable behavior
-   *
-   * @return void
-   */
-  public function setTableDefinition()
-  {
-    $this->addListener(new Doctrine_Template_Listener_Categorizable($this->_options));
   }
 
   public function setUp()
   {
-    $name = Doctrine_Inflector::tableize($this->getInvoker()->getTable()->getComponentName());
-
-    if (null === $this->_options['local'])
-    {
-      $this->_options['local'] = $name.'_id';
-    }
-
-    if (null === $this->_options['refClass'])
-    {
-      $this->_options['refClass'] = 'Category'.$this->getInvoker()->getTable()->getOption('name');
-    }
-
-    $options = $this->_options;
-    $relation = sprintf('%s as %s', $options['model'], $options['alias']);
+    $relation = sprintf('%s as %s', $this->_options['model'], $this->_options['alias']);
 
     $this->hasMany($relation, array(
-      'refClass' => $options['refClass'],
-      'local' => $options['local'],
-      'foreign' => $options['foreign']
+      'refClass' => $this->_options['refClass'],
+      'local' => $this->_options['local'],
+      'foreign' => $this->_options['foreign']
     ));
+  }
 
-    $this->_plugin->initialize($this->_table);
+  public function getCategoriesQuery()
+  {
+    $q = Doctrine_Query::create()
+      ->select('c.*')
+      ->from('Category c')
+      ->andwhere('c.categorized_type = ?', get_class($this->getInvoker()))
+      ->andWhere('c.categorized_id = ?', $this->getInvoker()->getId());
+
+    return $q;
+  }
+
+  public function getCategories()
+  {
+    return $this->getCategoriesQuery()->execute();
   }
 
   public function createRootTableProxy()

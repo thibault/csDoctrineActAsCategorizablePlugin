@@ -5,3 +5,30 @@ Category:
   columns:
     name:
       type:           string(255)
+
+# Ref class for the many to many relationship
+CategoryObject:
+  columns:
+    category_id:
+      type: integer
+      primary: true
+
+    categorized_model:
+      type: string(50)
+      primary: true
+
+    categorized_id:
+      type: integer
+      primary: true
+
+  relations:
+    Category:
+      local: category_id
+      foreign: id
+
+  indexes:
+    Categorized:
+      fields: [ categorized_model, categorized_id ]
+
+  attributes:
+    export: [ all, constraints ]
