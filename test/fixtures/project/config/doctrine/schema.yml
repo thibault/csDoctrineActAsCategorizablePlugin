@@ -1,0 +1,6 @@
+Article:
+  actAs:
+    Categorizable: ~
+
+  columns:
+    title: string(255)
