@@ -2,6 +2,8 @@
 
 /**
  * Categorizable tests.
+ *
+ * Ok, functional tests for a plugin really looks like unit tests
  */
 include_once dirname(__FILE__).'/../bootstrap/unit.php';
 
@@ -73,3 +75,12 @@ $article->save();
 
 $t->is(1, $q->count());
 
+// @Test: getCategories returns the categories the article belongs
+
+$article->Categories[] = $category1;
+$article->Categories[] = $category2;
+$article->save();
+
+$categories = $article->getCategories();
+$t->is('Doctrine_Collection', get_class($categories));
+$t->is(2, $categories->count());
