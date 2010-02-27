@@ -1,28 +1,28 @@
 <?php
 
-// 
+//
 //  Categorizable.php
 //  csDoctrineActAsCategorizablePlugin
-//  
+//
 //  Created by Brent Shaffer on 2008-12-22.
 //  Copyright 2008 Centre{source}. All rights reserved.
-// 
+//
 
 class Doctrine_Template_Listener_Categorizable extends Doctrine_Record_Listener
 {
   /**
    * Array of Categorizable options
-   */  
+   */
   protected $_options = array();
 
 
   /**
    * Constructor for Categorizable Template
    *
-   * @param array $options 
+   * @param array $options
    * @return void
    * @author Brent Shaffer
-   */  
+   */
   public function __construct(array $options)
   {
     $this->_options = $options;
@@ -45,12 +45,12 @@ class Doctrine_Template_Listener_Categorizable extends Doctrine_Record_Listener
   /**
    * When a Categorizable object is deleted, promote all objects positioned lower than itself
    *
-   * @param string $Doctrine_Event 
+   * @param string $Doctrine_Event
    * @return void
    * @author Brent Shaffer
-   */  
+   */
   public function postDelete(Doctrine_Event $event)
   {
     // $object = $event->getInvoker();
-  }  
+  }
 }
