@@ -67,7 +67,7 @@ class Doctrine_Template_Listener_Categorizable extends Doctrine_Record_Listener
   {
     $invoker = $event->getInvoker();
 
-    Doctrine::getTable('Category')->createQuery()
+    Doctrine::getTable('CategoryObject')->createQuery()
       ->delete()
       ->addWhere('categorized_id = ?', $invoker->getId())
       ->addWhere('categorized_model = ?', get_class($invoker))
