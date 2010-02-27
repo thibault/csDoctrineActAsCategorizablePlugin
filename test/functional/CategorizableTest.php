@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Doctrine_Template_Categorizable tests.
+ * Categorizable tests.
  */
 include_once dirname(__FILE__).'/../bootstrap/unit.php';
 
