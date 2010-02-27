@@ -33,11 +33,17 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
     parent::__construct($options);
   }
 
+  /**
+   * Add the listener
+   **/
   public function setTableDefinition()
   {
     $this->addListener(new Doctrine_Template_Listener_Categorizable($this->_options));
   }
 
+  /**
+   * Initialize the category relationship
+   **/
   public function setUp()
   {
     $relation = sprintf('%s as %s', $this->_options['model'], $this->_options['alias']);
@@ -49,6 +55,11 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
     ));
   }
 
+  /**
+   * Generate a query to fetch all the categories the invoker belongs to
+   *
+   * @return Doctrine_Query
+   **/
   public function getCategoriesQuery()
   {
     $q = Doctrine_Query::create()
@@ -60,6 +71,11 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
     return $q;
   }
 
+  /**
+   * Return a collection of categories the invoker belongs to
+   *
+   * @return Doctrine_Collection
+   **/
   public function getCategories()
   {
     return $this->getCategoriesQuery()->execute();
