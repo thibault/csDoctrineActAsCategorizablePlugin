@@ -1,13 +1,11 @@
 <?php
 
-//
-//  Categorizable.php
-//  csDoctrineActAsCategorizablePlugin
-//
-//  Created by Brent Shaffer on 2008-12-22.
-//  Copyright 2008 Centre{source}. All rights reserved.
-//
-
+/**
+ * Categorizable listener
+ *
+ * @package csDoctrineActAsCategorizablePlugin
+ * @subpackage listener
+ **/
 class Doctrine_Template_Listener_Categorizable extends Doctrine_Record_Listener
 {
   /**
@@ -15,42 +13,64 @@ class Doctrine_Template_Listener_Categorizable extends Doctrine_Record_Listener
    */
   protected $_options = array();
 
-
   /**
-   * Constructor for Categorizable Template
+   * We take care of the categories reference here
    *
-   * @param array $options
-   * @return void
-   * @author Brent Shaffer
-   */
-  public function __construct(array $options)
+   * @see Doctrine_Connection_UnitOfWork::saveAssociations()
+   * @see Doctrine_Record::preSave()
+   **/
+  public function preSave(Doctrine_Event $event)
   {
-    $this->_options = $options;
+    $invoker = $event->getInvoker();
+
+    $ref = $invoker->reference('Categories');
+    if ($ref)
+    {
+      $rel = $invoker->getTable()->getRelation('Categories');
+
+      if ($rel instanceof Doctrine_Relation_Association)
+      {
+        $assocTable = $rel->getAssociationTable();
+
+        // Associations deletions
+        foreach ($ref->getDeleteDiff() as $r)
+        {
+          Doctrine::getTable('CategoryObject')->createQuery()
+            ->delete()
+            ->addWhere('category_id = ?', $r->getId())
+            ->addWhere('categorized_id = ?', $invoker->getId())
+            ->addWhere('categorized_model = ?', get_class($invoker))
+            ->execute();
+        }
+
+        // Take care of new associations
+        foreach ($ref->getInsertDiff() as $r)
+        {
+          $r->save();
+          $assocRecord = $assocTable->create();
+          $assocRecord->set('category_id', $r->getId());
+          $assocRecord->set('categorized_id', $invoker->getId());
+          $assocRecord->set('categorized_model', get_class($invoker));
+          $assocRecord->save();
+          $ref->takeSnapshot();
+        }
+      }
+    }
   }
 
-
   /**
-   * Set the position value automatically when a new Categorizable object is created
+   * Delete all associations record before delete
    *
-   * @param Doctrine_Event $event
-   * @return void
-   * @author Brent Shaffer
-   */
-  public function preInsert(Doctrine_Event $event)
+   * @see Doctrine_Record::preDelete()
+   **/
+  public function preDelete(Doctrine_Event $event)
   {
-    // $object = $event->getInvoker();
-  }
+    $invoker = $event->getInvoker();
 
-
-  /**
-   * When a Categorizable object is deleted, promote all objects positioned lower than itself
-   *
-   * @param string $Doctrine_Event
-   * @return void
-   * @author Brent Shaffer
-   */
-  public function postDelete(Doctrine_Event $event)
-  {
-    // $object = $event->getInvoker();
+    Doctrine::getTable('Category')->createQuery()
+      ->delete()
+      ->addWhere('categorized_id = ?', $invoker->getId())
+      ->addWhere('categorized_model = ?', get_class($invoker))
+      ->execute();
   }
 }
