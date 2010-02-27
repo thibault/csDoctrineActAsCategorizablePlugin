@@ -1,12 +1,15 @@
 <?php
 
-//
-//  Categorizable.php
-//  csActAsCategorizablePlugin
-//
-//  Created by Brent Shaffer on 2009-01-29.
-//  Copyright 2008 Centre{source}. Al9 rights reserved.
-
+/**
+ * Categorizable template
+ *
+ * Add categories to your model
+ *
+ * @package csDoctrineActAsCategorizablePlugin
+ * @subpackage template
+ * @author Brent Shaffer, Centre{source} (initial version)
+ * @author Thibault Jouannic <thibault@jouannic.fr> (1.4 branch)
+ **/
 class Doctrine_Template_Categorizable extends Doctrine_Template
 {
   /**
