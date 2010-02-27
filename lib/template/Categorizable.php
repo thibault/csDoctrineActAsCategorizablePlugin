@@ -33,6 +33,11 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
     parent::__construct($options);
   }
 
+  public function setTableDefinition()
+  {
+    $this->addListener(new Doctrine_Template_Listener_Categorizable($this->_options));
+  }
+
   public function setUp()
   {
     $relation = sprintf('%s as %s', $this->_options['model'], $this->_options['alias']);
