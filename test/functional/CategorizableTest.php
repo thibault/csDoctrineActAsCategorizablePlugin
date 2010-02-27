@@ -42,27 +42,27 @@ Doctrine::getTable('Category')->createQuery()
 
 // @Test: a CategoryObject is created when you add category
 
-$t->is(0, $q->count());
+$t->is($q->count(), 0);
 
 $article->Categories[] = $category1;
 $article->save();
 
-$t->is(1, $q->count());
+$t->is($q->count(), 1);
 
 $article->Categories[] = $category2;
 $article->save();
 
-$t->is(2, $q->count());
+$t->is($q->count(), 2);
 
 // @Test: you can add several categories at once
 
-$t->is(0, $q->count());
+$t->is($q->count(), 0);
 
 $article->Categories[] = $category1;
 $article->Categories[] = $category2;
 $article->save();
 
-$t->is(2, $q->count());
+$t->is($q->count(), 2);
 
 // @Test: categories can be removed from an object
 
@@ -73,7 +73,7 @@ $article->save();
 unset($article->Categories[0]);
 $article->save();
 
-$t->is(1, $q->count());
+$t->is($q->count(), 1);
 
 // @Test: getCategories returns the categories the article belongs
 
@@ -82,5 +82,5 @@ $article->Categories[] = $category2;
 $article->save();
 
 $categories = $article->getCategories();
-$t->is('Doctrine_Collection', get_class($categories));
-$t->is(2, $categories->count());
+$t->is(get_class($categories), 'Doctrine_Collection');
+$t->is($categories->count(), 2);
