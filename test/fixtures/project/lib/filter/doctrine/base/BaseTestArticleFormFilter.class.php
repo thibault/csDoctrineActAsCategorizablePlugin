@@ -13,13 +13,11 @@ abstract class BaseTestArticleFormFilter extends BaseFormFilterDoctrine
   public function setup()
   {
     $this->setWidgets(array(
-      'title'           => new sfWidgetFormFilterInput(),
-      'categories_list' => new sfWidgetFormDoctrineChoice(array('multiple' => true, 'model' => 'Category')),
+      'title' => new sfWidgetFormFilterInput(),
     ));
 
     $this->setValidators(array(
-      'title'           => new sfValidatorPass(array('required' => false)),
-      'categories_list' => new sfValidatorDoctrineChoice(array('multiple' => true, 'model' => 'Category', 'required' => false)),
+      'title' => new sfValidatorPass(array('required' => false)),
     ));
 
     $this->widgetSchema->setNameFormat('test_article_filters[%s]');
@@ -31,22 +29,6 @@ abstract class BaseTestArticleFormFilter extends BaseFormFilterDoctrine
     parent::setup();
   }
 
-  public function addCategoriesListColumnQuery(Doctrine_Query $query, $field, $values)
-  {
-    if (!is_array($values))
-    {
-      $values = array($values);
-    }
-
-    if (!count($values))
-    {
-      return;
-    }
-
-    $query->leftJoin('r.CategoryObject CategoryObject')
-          ->andWhereIn('CategoryObject.category_id', $values);
-  }
-
   public function getModelName()
   {
     return 'TestArticle';
@@ -55,9 +37,8 @@ abstract class BaseTestArticleFormFilter extends BaseFormFilterDoctrine
   public function getFields()
   {
     return array(
-      'id'              => 'Number',
-      'title'           => 'Text',
-      'categories_list' => 'ManyKey',
+      'id'    => 'Number',
+      'title' => 'Text',
     );
   }
 }
