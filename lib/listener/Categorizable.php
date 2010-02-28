@@ -5,56 +5,51 @@
  *
  * @package csDoctrineActAsCategorizablePlugin
  * @subpackage listener
+ * @author Thibault Jouannic <thibault@jouannic.fr>
  **/
 class Doctrine_Template_Listener_Categorizable extends Doctrine_Record_Listener
 {
   /**
-   * Array of Categorizable options
-   */
-  protected $_options = array();
-
-  /**
    * We take care of the categories reference here
+   * We simulate a many to many relation
    *
    * @see Doctrine_Connection_UnitOfWork::saveAssociations()
    * @see Doctrine_Record::preSave()
    **/
-  public function preSave(Doctrine_Event $event)
+  public function postSave(Doctrine_Event $event)
   {
     $invoker = $event->getInvoker();
+    $categories = $invoker->getCategories();
 
-    $ref = $invoker->reference('Categories');
-    if ($ref)
+    if($categories instanceOf Doctrine_Collection)
     {
-      $rel = $invoker->getTable()->getRelation('Categories');
-
-      if ($rel instanceof Doctrine_Relation_Association)
+      // Associations deletions
+      foreach ($categories->getDeleteDiff() as $c)
       {
-        $assocTable = $rel->getAssociationTable();
-
-        // Associations deletions
-        foreach ($ref->getDeleteDiff() as $r)
-        {
-          Doctrine::getTable('CategoryObject')->createQuery()
-            ->delete()
-            ->addWhere('category_id = ?', $r->getId())
-            ->addWhere('categorized_id = ?', $invoker->getId())
-            ->addWhere('categorized_model = ?', get_class($invoker))
-            ->execute();
-        }
-
-        // Take care of new associations
-        foreach ($ref->getInsertDiff() as $r)
-        {
-          $r->save();
-          $assocRecord = $assocTable->create();
-          $assocRecord->set('category_id', $r->getId());
-          $assocRecord->set('categorized_id', $invoker->getId());
-          $assocRecord->set('categorized_model', get_class($invoker));
-          $assocRecord->save();
-          $ref->takeSnapshot();
-        }
+        $q = Doctrine::getTable('CategoryObject')->createQuery()
+          ->delete()
+          ->addWhere('category_id = ?', $c->getId())
+          ->addWhere('categorized_id = ?', $invoker->getId())
+          ->addWhere('categorized_model = ?', get_class($invoker));
+          $q->execute();
       }
+
+      // Take care of new associations
+      foreach ($categories->getInsertDiff() as $c)
+      {
+        // This is the added category
+        $c->save();
+
+        // And this is the refClass object
+        $assocRecord = new CategoryObject();
+        $assocRecord->set('category_id', $c->getId());
+        $assocRecord->set('categorized_id', $invoker->getId());
+        $assocRecord->set('categorized_model', get_class($invoker));
+        $assocRecord->save();
+      }
+
+      // Take a snapshot to record the current collection state
+      $categories->takeSnapshot();
     }
   }
 
@@ -72,5 +67,7 @@ class Doctrine_Template_Listener_Categorizable extends Doctrine_Record_Listener
       ->addWhere('categorized_id = ?', $invoker->getId())
       ->addWhere('categorized_model = ?', get_class($invoker))
       ->execute();
+
+    $invoker->setCategories(null);
   }
 }
