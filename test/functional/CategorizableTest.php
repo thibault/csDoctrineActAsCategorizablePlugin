@@ -81,6 +81,15 @@ $article->Categories[] = $category1;
 $article->Categories[] = $category2;
 $article->save();
 
-$categories = $article->getCategories();
+$categories = $article->get('Categories');
 $t->is(get_class($categories), 'Doctrine_Collection');
 $t->is($categories->count(), 2);
+
+// @Test: Categories are affected to the correct object
+
+$newArticle = new TestArticle();
+$newArticle->setTitle('new article');
+$newArticle->Categories[]->name = 'new category';
+
+$t->is($q->count(), 0);
+$t->is($newArticle->getCategories()->count(), 1);
