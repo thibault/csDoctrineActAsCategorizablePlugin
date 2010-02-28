@@ -5,6 +5,12 @@
  */
 abstract class PluginCategory extends BaseCategory
 {
+  public function preDelete($event)
+  {
+    // We must delete the CategoryObject references
+    Doctrine::getTable('CategoryObject')->deleteByCategoryId($this->getId());
+  }
+
   // Starting from here, all this code comes from:
   // http://www.lexik.fr/blog/symfony/symfony/nested-set-doctrine-135
   public function getSubCategories()

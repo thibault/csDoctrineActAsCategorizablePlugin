@@ -93,3 +93,13 @@ $newArticle->Categories[]->name = 'new category';
 
 $t->is($q->count(), 0);
 $t->is($newArticle->getCategories()->count(), 1);
+
+// @Test: Delete a category delete the association object
+
+$article->Categories[] = $category1;
+$article->Categories[] = $category2;
+$article->save();
+$article->Categories[1]->delete();
+
+$q = Doctrine::getTable('CategoryObject')->createQuery();
+$t->is($q->count(), 1);
