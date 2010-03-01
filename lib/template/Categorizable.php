@@ -16,7 +16,6 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
    * Array of Categorizable options
    */
   protected $_options = array();
-  protected $_categories = null;
 
   /**
    * Constructor for Categorizable Template
@@ -66,12 +65,17 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
    **/
   public function getCategories()
   {
-    // I cannot imagine a case where this is incorrect, but let's keep an eye on this
-    if (null === $this->_categories)
+    if (!$this->getInvoker()->hasMappedValue('_categories'))
     {
-      $this->setCategories($this->getCategoriesQuery()->execute());
+      $categories = $this->getCategoriesQuery()->execute();
+      $this->setCategories($categories);
     }
-    return $this->_categories;
+    else
+    {
+      $categories = $this->getInvoker()->get('_categories');
+    }
+
+    return $categories;
   }
 
   /**
@@ -79,6 +83,6 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
    **/
   public function setCategories(Doctrine_Collection $categories = null)
   {
-    $this->_categories = $categories;
+    $this->getInvoker()->mapValue('_categories', $categories);
   }
 }
