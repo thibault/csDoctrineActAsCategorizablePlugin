@@ -8,6 +8,10 @@ class PluginCategoryTable extends Doctrine_Table
 {
   /**
    * Get a category by name
+   *
+   * @param string $name The category name
+   *
+   * @return Category
    **/
   public function getCategory($name)
   {
@@ -21,7 +25,11 @@ class PluginCategoryTable extends Doctrine_Table
   }
 
   /**
-   * Get a category by name, and create it if it doens'nt exists already
+   * Get a category by name, and create it if it doesn't exists already
+   *
+   * @param string $name The category name
+   *
+   * @return Category
    **/
   public function getOrCreateCategory($name)
   {
@@ -36,9 +44,20 @@ class PluginCategoryTable extends Doctrine_Table
     return $category;
   }
 
-  public function getCategories($category_id)
+  /**
+   * Get all categories in the category subtree (root included)
+   *
+   * @param string $parentName
+   *
+   * @return Doctrine_Collection
+   **/
+  public function getSubTreeCategories($parentName)
   {
-    $parent = $this->findOneById($category_id);
+    $parent = $this->findOneByName($parentName);
+
+    if (!$parent instanceOf Category)
+      return null;
+
     $children = $parent->getSubCategories();
     if(!$children)
     {
@@ -46,17 +65,5 @@ class PluginCategoryTable extends Doctrine_Table
     }
     $children->add($parent);
     return $children;
-  }
-
-  public function getRootByClassName($name)
-  {
-    $q = $this->createQuery()->where('level = ?', 0)->addWhere('name = ?', $name);
-    return $q->fetchOne();
-  }
-
-  public function getCategoryTree($name)
-  {
-    $root = $this->getRootByClassName($name);
-    return $root ? $this->getTree($root->getId()) : $this->getTree();
   }
 }

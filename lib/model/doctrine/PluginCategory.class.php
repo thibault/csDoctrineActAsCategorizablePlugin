@@ -66,6 +66,8 @@ abstract class PluginCategory extends BaseCategory
     return $q;
   }
 
+  // From this line, all this code comes from the old version
+
   public function getSubCategories()
   {
     return $this->getNode()->getDescendants();
