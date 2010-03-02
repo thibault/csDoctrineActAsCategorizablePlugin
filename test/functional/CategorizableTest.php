@@ -45,6 +45,17 @@ Doctrine::getTable('Category')->createQuery()
   ->delete()
   ->execute();
 
+// @Test: categories can be added for new records instances
+
+$article->Categories[] = $category1;
+$article->save();
+
+$record = Doctrine::getTable('TestArticle')->findOneById($article->getId());
+$record->Categories[] = $category2;
+$record->save();
+
+$t->is($q->count(), 2);
+
 // @Test: a CategoryObject is created when you add category
 
 $t->is($q->count(), 0);
@@ -109,3 +120,10 @@ $article->Categories[1]->delete();
 $q = Doctrine::getTable('CategoryObject')->createQuery();
 $t->is($q->count(), 1);
 
+// @Test: setCategoriesByIds really affects the categories to the objects
+
+$ids = array($category1->getId(), $category2->getId());
+$article->setCategoriesByIds($ids);
+$article->save();
+
+$t->is($q->count(), 2);

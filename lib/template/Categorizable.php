@@ -85,4 +85,22 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
   {
     $this->getInvoker()->mapValue('_categories', $categories);
   }
+
+  /**
+   * set Categories by ids
+   * Use it in forms
+   *
+   * @param array $ids The array of ids
+   **/
+  public function setCategoriesByIds($ids = array())
+  {
+    $categories = Doctrine::getTable('Category')->createQuery('c')
+      ->whereIn('id', $ids)
+      ->execute();
+
+    // We cannot just replace the existing collection, as it would erase the collection snapshot
+    $existing = $this->getCategories();
+    $existing->clear();
+    $existing->merge($categories);
+  }
 }
