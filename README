@@ -100,7 +100,7 @@ So if you want to use the `fromArray` method to hydrate or update a record, you 
     // Same methods, but returns all objects for the whole subtree
     $articles = $category->getSubtreeObjects('Article');
 
-    __ *variable is mixed, can be a string or a Category __
+_*variable is mixed, can be a string or a Category_
 
 ## Category Table Methods
 
