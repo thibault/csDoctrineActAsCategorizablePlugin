@@ -7,6 +7,20 @@
 class PluginCategoryTable extends Doctrine_Table
 {
   /**
+   * Get a category by name
+   **/
+  public function getCategory($name)
+  {
+    if (!is_string($name))
+    {
+      throw new sfException('You must pass a string as an argument');
+    }
+
+    $category = $this->findOneByName($name);
+    return $category;
+  }
+
+  /**
    * Get a category by name, and create it if it doens'nt exists already
    **/
   public function getOrCreateCategory($name)
@@ -19,20 +33,6 @@ class PluginCategoryTable extends Doctrine_Table
       $category->save();
     }
 
-    return $category;
-  }
-
-  /**
-   * Get a category by name
-   **/
-  public function getCategory($name)
-  {
-    if (!is_string($name))
-    {
-      throw new sfException('You must pass a string as an argument');
-    }
-
-    $category = $this->findOneByName($name);
     return $category;
   }
 
