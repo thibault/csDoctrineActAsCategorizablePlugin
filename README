@@ -114,6 +114,73 @@ _*variable is mixed, can be a string or a Category_
     // Get all categories in the category subtree (root included)
     $categories = Doctrine::getTable('Category')->getSubTreeCategories('Cooking');
 
+## How to add categories list in a form
+
+As we are not using a real Doctrine many-to-many relation to manage categories, Symfony won't add a `Categories` field in your categorizable model forms.
+
+Here's a simple code to create a categories select box in a form.
+
+    [php]
+    // lib/form/doctrine/ArticleForm.class.php
+    class ArticleForm extends BaseArticleForm
+    {
+      public function configure()
+      {
+        $this->widgetSchema['categories_list'] = new sfWidgetFormDoctrineChoice(array(
+          'multiple' => true,
+          'model' => 'Category',
+          'order_by' => array('root_id, lft',''),
+          'method' => 'getIndentedName'
+        ));
+
+        $this->validatorSchema['categories_list'] = new sfValidatorDoctrineChoice(array(
+          'multiple' => true,
+          'model' => 'Category',
+          'required' => false
+        ));
+      }
+
+      public function updateDefaultsFromObject()
+      {
+        parent::updateDefaultsFromObject();
+
+        if (isset($this->widgetSchema['categories_list']))
+        {
+          $this->setDefault('categories_list', $this->object->Categories->getPrimaryKeys());
+        }
+      }
+
+      protected function doSave($con = null)
+      {
+        $this->saveCategoriesList($con);
+
+        parent::doSave($con);
+      }
+
+      public function saveCategoriesList($con = null)
+      {
+        if (!$this->isValid())
+        {
+          throw $this->getErrorSchema();
+        }
+
+        if (!isset($this->widgetSchema['categories_list']))
+        {
+          // somebody has unset this widget
+          return;
+        }
+
+        if (null === $con)
+        {
+          $con = $this->getConnection();
+        }
+
+        $values = $this->getValue('categories_list');
+        $this->object->setCategoriesByIds($values);
+      }
+    }
+
+
 ## Testing the plugin ##
 
 This plugins comes with an auto-generated (with the `sfTaskExtraPlugin`) fixtures project, to run the tests
