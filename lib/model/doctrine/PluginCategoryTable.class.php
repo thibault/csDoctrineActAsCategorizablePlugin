@@ -6,28 +6,33 @@
  */
 class PluginCategoryTable extends Doctrine_Table
 {
+  /**
+   * Get a category by name, and create it if it doens'nt exists already
+   **/
   public function getOrCreateCategory($name)
   {
     $category = $this->findOneByName($name);
-    if($category)
-    {
-      return $category;
-    }
-    else
+    if (!$category)
     {
       $category = new Category();
       $category['name'] = $name;
       $category->save();
-      return $category;
     }
+
+    return $category;
   }
 
-  public function getCategory($category)
+  /**
+   * Get a category by name
+   **/
+  public function getCategory($name)
   {
-    if(is_string($category))
+    if (!is_string($name))
     {
-      $category = $this->findOneByName($category);
+      throw new sfException('You must pass a string as an argument');
     }
+
+    $category = $this->findOneByName($name);
     return $category;
   }
 
@@ -42,11 +47,13 @@ class PluginCategoryTable extends Doctrine_Table
     $children->add($parent);
     return $children;
   }
+
   public function getRootByClassName($name)
   {
     $q = $this->createQuery()->where('level = ?', 0)->addWhere('name = ?', $name);
     return $q->fetchOne();
   }
+
   public function getCategoryTree($name)
   {
     $root = $this->getRootByClassName($name);
