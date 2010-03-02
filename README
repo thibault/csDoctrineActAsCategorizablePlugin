@@ -102,7 +102,7 @@ So if you want to use the `fromArray` method to hydrate or update a record, you 
 
     __ *variable is mixed, can be a string or a Category __
 
-#Category Table Methods
+## Category Table Methods
 
     [php]
     // returns a Category object with the specified name
@@ -113,3 +113,24 @@ So if you want to use the `fromArray` method to hydrate or update a record, you 
 
     // Get all categories in the category subtree (root included)
     $categories = Doctrine::getTable('Category')->getSubTreeCategories('Cooking');
+
+## Testing the plugin ##
+
+This plugins comes with an auto-generated (with the `sfTaskExtraPlugin`) fixtures project, to run the tests
+without touching your own app. Tests are not included in the package version, so you'll have to checkout
+the trunk version.
+
+Note that those tests are written to be run with lime 2 (alpha1).
+
+You don't have to configure any database, as we provide an sqlite one. Just make sure the php-sqlite extensio
+is installed.
+
+Here's how you can easily run the plugin test suite :
+
+    $ php plugins/csDoctrineActAsCategorizablePlugin/test/bin/prove.php
+
+## Professional support ##
+
+The 1.4 branch of this plugin is developped by Thibault Jouannic.
+I'm a freelance developer, working from France, and can provide professional support for this plugin.
+Contact me at thibault << at >> jouannic.fr, I speak french and english.
