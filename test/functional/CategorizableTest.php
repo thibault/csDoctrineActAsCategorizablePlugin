@@ -24,6 +24,11 @@ $category2 = new Category();
 $category2->setName('category2');
 $category2->save();
 
+$tree = Doctrine::getTable('Category')->getTree();
+$tree->createRoot($category1);
+
+$category2->getNode()->insertAsLastChildOf($category1);
+
 $q = Doctrine::getTable('CategoryObject')->createQuery()
   ->addWhere('categorized_model = ?', 'TestArticle')
   ->addWhere('categorized_id = ?', $article->getId());
@@ -103,3 +108,4 @@ $article->Categories[1]->delete();
 
 $q = Doctrine::getTable('CategoryObject')->createQuery();
 $t->is($q->count(), 1);
+

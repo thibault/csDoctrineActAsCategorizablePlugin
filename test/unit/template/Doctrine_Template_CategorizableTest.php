@@ -18,4 +18,4 @@ $article->delete();
 
 // @Test: Template is available
 
-$t->ok($article->getTable()->hasRelation('Categories'));
+$t->ok(is_callable(array($article, 'getCategories')));
