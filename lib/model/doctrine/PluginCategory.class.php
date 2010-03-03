@@ -23,10 +23,20 @@ abstract class PluginCategory extends BaseCategory
    **/
   public function getObjects($class)
   {
-    $q = $this->_selectObjectsJoinCategoryRawQuery($class)
-      ->andWhere('co.category_id = ?', $this->getId());
+    return $this->getObjectsRawSql($class)->execute();
+  }
 
-    return $q->execute();
+  /**
+   * Get a query to select objects in the category
+   *
+   * @param $class string The table of the objects we want
+   *
+   * @return Doctrine_RawSql
+   **/
+  public function getObjectsRawSql($class, $alias = 'o')
+  {
+    return $this->_selectObjectsJoinCategoryRawQuery($class, $alias)
+      ->andWhere('co.category_id = ?', $this->getId());
   }
 
   /**
@@ -38,13 +48,22 @@ abstract class PluginCategory extends BaseCategory
    **/
   public function getSubtreeObjects($class)
   {
-    $q = $this->_selectObjectsJoinCategoryRawQuery($class)
+    return $this->getSubtreeObjectsRawSql($class)->execute();
+  }
+
+  /**
+   * Get a query to select subtree objects
+   *
+   * @param $class string The table of the objects we want
+   *
+   * @return Doctrine_RawSql
+   **/
+  public function getSubtreeObjectsRawSql($class, $alias = 'o')
+  {
+    return $this->_selectObjectsJoinCategoryRawQuery($class, $alias)
       ->addFrom('INNER JOIN category c ON co.category_id = c.id')
       ->andWhere('c.lft >= ?', $this->getLft())
-      ->andWhere('c.rgt <= ?', $this->getRgt())
-      ->addComponent('o', $class);
-
-    return $q->execute();
+      ->andWhere('c.rgt <= ?', $this->getRgt());
   }
 
   /**
@@ -54,14 +73,14 @@ abstract class PluginCategory extends BaseCategory
    *
    * @retun Doctrine_RawSql
    **/
-  protected function _selectObjectsJoinCategoryRawQuery($class)
+  protected function _selectObjectsJoinCategoryRawQuery($class, $alias)
   {
     $q = new Doctrine_RawSql();
-    $q->select('{o.*}')
-      ->from(Doctrine_Inflector::tableize($class) . ' o')
-      ->addFrom('INNER JOIN category_object co ON o.id = co.categorized_id')
+    $q->select(sprintf('{%s.*}', $alias))
+      ->from(Doctrine_Inflector::tableize($class) . ' ' . $alias)
+      ->addFrom(sprintf('INNER JOIN category_object co ON %s.id = co.categorized_id', $alias))
       ->addWhere('co.categorized_model = ?', $class)
-      ->addComponent('o', $class);
+      ->addComponent($alias, $class);
 
     return $q;
   }
