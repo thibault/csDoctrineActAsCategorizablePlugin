@@ -103,4 +103,12 @@ class Doctrine_Template_Categorizable extends Doctrine_Template
     $existing->clear();
     $existing->merge($categories);
   }
+
+  /**
+   * Remove all categories from the object
+   **/
+  public function clearCategories()
+  {
+    $this->getCategories()->clear();
+  }
 }
