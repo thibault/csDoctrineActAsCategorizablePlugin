@@ -53,6 +53,10 @@ From now, you can simply add or delete categories, the same way you would do wit
     $article->Categories[] = $category;
     $article->save();
 
+    // Remove all categories from object
+    $article->clearCategories();
+    $article->save();
+
 Be careful, categories are actually stored in a variable called `_categories` in the record, because of a
 technical limitation.
 
@@ -176,7 +180,14 @@ Here's a simple code to create a categories select box in a form.
         }
 
         $values = $this->getValue('categories_list');
-        $this->object->setCategoriesByIds($values);
+        if ($values)
+        {
+          $this->object->setCategoriesByIds($values);
+        }
+        else
+        {
+          $this->object->clearCategories();
+        }
       }
     }
 
